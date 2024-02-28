@@ -19,12 +19,9 @@ from typing import (
 )
 
 import numpy as np
-import boto3
 
-from sagemaker.session import Session
-
-from langchain.document_loaders import ReadTheDocsLoader
-from langchain.vectorstores import OpenSearchVectorSearch
+from langchain_community.document_loaders import ReadTheDocsLoader
+from langchain_community.vectorstores import OpenSearchVectorSearch
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # from opensearchpy.client import OpenSearch

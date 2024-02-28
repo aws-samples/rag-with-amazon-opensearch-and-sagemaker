@@ -47,11 +47,11 @@ Before synthesizing the CloudFormation, you should set approperly the cdk contex
 
 For example:
 
-```
+<pre>
 {
-  "opensearch_domain_name": "open-search-domain-name"
+  "opensearch_domain_name": "<i>open-search-domain-name</i>"
 }
-```
+</pre>
 
 Now this point you can now synthesize the CloudFormation template for this code.
 

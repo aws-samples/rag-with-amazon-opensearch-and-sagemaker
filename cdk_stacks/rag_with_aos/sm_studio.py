@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import random
 import string
 
@@ -9,7 +8,6 @@ from aws_cdk import (
   Stack,
   aws_ec2,
   aws_iam,
-  aws_s3 as s3,
   aws_sagemaker
 )
 from constructs import Construct
