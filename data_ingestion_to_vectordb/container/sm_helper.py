@@ -70,3 +70,4 @@ def create_sagemaker_embeddings_from_js_model(embeddings_model_endpoint_name: st
         content_handler=content_handler
     )
     return embeddings
+
