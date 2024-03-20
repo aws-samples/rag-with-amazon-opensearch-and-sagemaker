@@ -7,12 +7,12 @@ from urllib.parse import urlparse
 
 import boto3
 
-from langchain.vectorstores import OpenSearchVectorSearch
-from langchain.embeddings import SagemakerEndpointEmbeddings
+from langchain_community.vectorstores import OpenSearchVectorSearch
+from langchain_community.embeddings import SagemakerEndpointEmbeddings
+from langchain_community.embeddings.sagemaker_endpoint import EmbeddingsContentHandler
+
 from langchain.llms.sagemaker_endpoint import SagemakerEndpoint
 from langchain.llms.sagemaker_endpoint import LLMContentHandler
-from langchain.llms.sagemaker_endpoint import ContentHandlerBase
-from langchain.embeddings.sagemaker_endpoint import EmbeddingsContentHandler
 from langchain.prompts import PromptTemplate
 from langchain.chains.question_answering import load_qa_chain
 
