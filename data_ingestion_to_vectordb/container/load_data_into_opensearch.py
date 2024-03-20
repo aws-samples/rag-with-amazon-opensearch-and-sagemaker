@@ -24,7 +24,6 @@ from langchain_community.document_loaders import ReadTheDocsLoader
 from langchain_community.vectorstores import OpenSearchVectorSearch
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# from opensearchpy.client import OpenSearch
 from opensearchpy import (
     OpenSearch,
     RequestsHttpConnection,
