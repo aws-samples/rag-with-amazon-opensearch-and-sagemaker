@@ -1,5 +1,6 @@
 boto3>=1.26.159
 langchain==0.1.11
 langchain_community==0.0.29
+SQLAlchemy==2.0.2
 opensearch-py==2.2.0
 streamlit==1.30.0
