@@ -5,6 +5,7 @@ Now we’re ready to run the Streamlit web application for our question answerin
 SageMaker Studio provides a convenient platform to host the Streamlit web application. The following steps describes how to run the Streamlit app on SageMaker Studio. Alternatively, you could also follow the same procedure to run the app on Amazon EC2 instance or Cloud9 in your AWS Account.
 
 1. Open Studio and then open a new **System terminal**.
+   ![](sagemaker-studio-launcher-screenshot.png)
 2. Run the following commands on the terminal to clone the code repository for this post and install the Python packages needed by the application:
    ```
    git clone https://github.com/aws-samples/rag-with-amazon-opensearch-and-sagemaker.git
