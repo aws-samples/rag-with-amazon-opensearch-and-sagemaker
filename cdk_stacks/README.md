@@ -49,9 +49,13 @@ For example:
 
 <pre>
 {
-  "opensearch_domain_name": "<i>open-search-domain-name</i>"
+  "opensearch_domain_name": "<i>open-search-domain-name</i>",
+  "jumpstart_llm_model_id": "META_TEXTGENERATION_LLAMA_2_7B_2_1_0",
+  "llm_endpoint_name": "llama2-7b"
 }
 </pre>
+
+:information_source: `jumpstart_llm_model_id` can be found in [here](https://github.com/awslabs/generative-ai-cdk-constructs/blob/main/src/patterns/gen-ai/aws-model-deployment-sagemaker/jumpstart-model.ts).
 
 Now this point you can now synthesize the CloudFormation template for this code.
 
