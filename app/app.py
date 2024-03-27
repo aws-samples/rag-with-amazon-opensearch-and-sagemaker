@@ -1,14 +1,18 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+
 import streamlit as st
 import uuid
 
-import opensearch_chat_flan_xl as flanxl
+import opensearch_chat_llama2 as llm_app
 
 
 USER_ICON = "images/user-icon.png"
 AI_ICON = "images/ai-icon.png"
 MAX_HISTORY_LENGTH = 5
 PROVIDER_MAP = {
-    'flanxl': 'Flan XL',
+    'llama2': 'Llama2 7B',
 }
 
 # Check if the user ID is already stored in the session state
@@ -22,8 +26,8 @@ else:
 
 
 if 'llm_chain' not in st.session_state:
-    st.session_state['llm_app'] = flanxl
-    st.session_state['llm_chain'] = flanxl.build_chain()
+    st.session_state['llm_app'] = llm_app
+    st.session_state['llm_chain'] = llm_app.build_chain()
 
 if 'chat_history' not in st.session_state:
     st.session_state['chat_history'] = []
@@ -77,7 +81,7 @@ def write_top_bar():
     with col1:
         st.image(AI_ICON, use_column_width='always')
     with col2:
-        selected_provider = 'flanxl'
+        selected_provider = 'llama2'
         if selected_provider in PROVIDER_MAP:
             provider = PROVIDER_MAP[selected_provider]
         else:

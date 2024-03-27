@@ -19,7 +19,7 @@ class VpcStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc_name = self.node.try_get_context('vpc_name') or 'default'
     # self.vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
     #   is_default=True,
     #   vpc_name=vpc_name
@@ -53,5 +53,5 @@ class VpcStack(Stack):
       }
     )
 
-    cdk.CfnOutput(self, '{}_VPCID'.format(self.stack_name), value=self.vpc.vpc_id,
-      export_name='VPCID')
+    cdk.CfnOutput(self, 'VPCID', value=self.vpc.vpc_id,
+      export_name=f'{self.stack_name}-VPCID')

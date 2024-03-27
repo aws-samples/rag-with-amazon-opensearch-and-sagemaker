@@ -108,28 +108,27 @@ def build_chain():
         accepts = "application/json"
 
         def transform_input(self, prompt: str, model_kwargs: dict) -> bytes:
-            input_str = json.dumps({"text_inputs": prompt, **model_kwargs})
+            input_str = json.dumps({"inputs": prompt, "parameters": model_kwargs})
             return input_str.encode('utf-8')
 
         def transform_output(self, output: bytes) -> str:
             response_json = json.loads(output.read().decode("utf-8"))
-            return response_json["generated_texts"][0]
+            return response_json[0]["generation"]
 
     content_handler = ContentHandler()
 
     model_kwargs = {
-      "max_length": 500,
-      "num_return_sequences": 1,
-      "top_k": 250,
-      "top_p": 0.95,
-      "do_sample": False,
-      "temperature": 1
+        "max_new_tokens": 256,
+        "top_p": 0.9,
+        "temperature": 0.6,
+        # "return_full_text": True,
     }
 
     llm = SagemakerEndpoint(
         endpoint_name=text2text_model_endpoint,
         region_name=region,
         model_kwargs=model_kwargs,
+        endpoint_kwargs={"CustomAttributes": "accept_eula=true"},
         content_handler=content_handler
     )
 

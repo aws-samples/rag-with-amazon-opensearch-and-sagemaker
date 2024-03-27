@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import random
-import string
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -12,7 +12,6 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-random.seed(47)
 
 class SageMakerStudioStack(Stack):
 
@@ -145,7 +144,7 @@ class SageMakerStudioStack(Stack):
     }))
 
     sagemaker_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
-      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=''.join(random.choices((string.digits), k=5))),
+      role_name=f'AmazonSageMakerStudioExecutionRole-{self.stack_name.lower()}',
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       path='/',
       inline_policies={
@@ -202,6 +201,12 @@ class SageMakerStudioStack(Stack):
 
     self.sm_execution_role_arn = sagemaker_execution_role.role_arn
 
-    cdk.CfnOutput(self, f'{self.stack_name}-DomainUrl', value=sagemaker_studio_domain.attr_url)
-    cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
-    cdk.CfnOutput(self, f'{self.stack_name}-UserProfileName', value=sagemaker_user_profile.user_profile_name)
+    cdk.CfnOutput(self, 'DomainUrl',
+      value=sagemaker_studio_domain.attr_url,
+      export_name=f'{self.stack_name}-DomainUrl')
+    cdk.CfnOutput(self, 'DomainId',
+      value=sagemaker_user_profile.domain_id,
+      export_name=f'{self.stack_name}-DomainId')
+    cdk.CfnOutput(self, 'UserProfileName',
+      value=sagemaker_user_profile.user_profile_name,
+      export_name=f'{self.stack_name}-UserProfileName')

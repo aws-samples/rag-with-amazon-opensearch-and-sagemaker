@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+
 import os
 import json
 import logging

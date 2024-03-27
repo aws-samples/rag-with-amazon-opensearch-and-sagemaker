@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import os
 
 import aws_cdk as cdk
@@ -34,13 +37,11 @@ sm_studio_stack = SageMakerStudioStack(app, 'RAGSageMakerStudioStack',
 sm_studio_stack.add_dependency(ops_stack)
 
 sm_embedding_endpoint = EmbeddingEndpointStack(app, 'EmbeddingEndpointStack',
-  sm_studio_stack.sm_execution_role_arn,
   env=APP_ENV
 )
 sm_embedding_endpoint.add_dependency(sm_studio_stack)
 
 sm_llm_endpoint = LLMEndpointStack(app, 'LLMEndpointStack',
-  sm_studio_stack.sm_execution_role_arn,
   env=APP_ENV
 )
 sm_llm_endpoint.add_dependency(sm_studio_stack)

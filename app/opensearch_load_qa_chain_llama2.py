@@ -44,9 +44,9 @@ class SagemakerEndpointEmbeddingsJumpStart(SagemakerEndpointEmbeddings):
         """
         results = []
         _chunk_size = len(texts) if chunk_size > len(texts) else chunk_size
-
         for i in range(0, len(texts), _chunk_size):
             response = self._embedding_func(texts[i : i + _chunk_size])
+            #print(response)
             results.extend(response)
         return results
 
@@ -75,12 +75,12 @@ class ContentHandlerForTextGeneration(LLMContentHandler):
     accepts = "application/json"
 
     def transform_input(self, prompt: str, model_kwargs = {}) -> bytes:
-        input_str = json.dumps({"text_inputs": prompt, **model_kwargs})
+        input_str = json.dumps({"inputs": prompt, "parameters": model_kwargs})
         return input_str.encode('utf-8')
 
     def transform_output(self, output: bytes) -> str:
         response_json = json.loads(output.read().decode("utf-8"))
-        return response_json["generated_texts"][0]
+        return response_json[0]["generation"]
 
 
 def _create_sagemaker_embeddings(endpoint_name: str, region: str = "us-east-1") -> SagemakerEndpointEmbeddingsJumpStart:
@@ -134,12 +134,10 @@ def load_vector_db_opensearch(secret_id: str,
 
 def setup_sagemaker_endpoint_for_text_generation(endpoint_name, region: str = "us-east-1") -> Callable:
     parameters = {
-        "max_length": 500,
-        "num_return_sequences": 1,
-        "top_k": 250,
-        "top_p": 0.95,
-        "do_sample": False,
-        "temperature": 1
+        "max_new_tokens": 256,
+        "top_p": 0.9,
+        "temperature": 0.6,
+        # "return_full_text": True,
     }
 
     content_handler = ContentHandlerForTextGeneration()
@@ -147,6 +145,7 @@ def setup_sagemaker_endpoint_for_text_generation(endpoint_name, region: str = "u
         endpoint_name=endpoint_name,
         region_name=region,
         model_kwargs=parameters,
+        endpoint_kwargs={"CustomAttributes": "accept_eula=true"},
         content_handler=content_handler)
     return sm_llm
 

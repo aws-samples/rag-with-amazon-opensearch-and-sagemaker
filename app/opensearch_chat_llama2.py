@@ -21,11 +21,26 @@ from langchain.llms.sagemaker_endpoint import (
 )
 
 from langchain.prompts import PromptTemplate
-from langchain.chains import RetrievalQA
-
+from langchain.chains import ConversationalRetrievalChain
 
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s,%(module)s,%(processName)s,%(levelname)s,%(message)s', level=logging.INFO, stream=sys.stderr)
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+MAX_HISTORY_LENGTH = 5
+
 
 class SagemakerEndpointEmbeddingsJumpStart(SagemakerEndpointEmbeddings):
     def embed_documents(
@@ -96,7 +111,7 @@ def _get_credentials(secret_id: str, region_name: str) -> str:
 
 
 def build_chain():
-    region = os.environ["AWS_REGION"] # us-east-1
+    region = os.environ["AWS_REGION"]
     opensearch_secret = os.environ["OPENSEARCH_SECRET"]
     opensearch_domain_endpoint = os.environ["OPENSEARCH_DOMAIN_ENDPOINT"]
     opensearch_index = os.environ["OPENSEARCH_INDEX"]
@@ -107,29 +122,30 @@ def build_chain():
         content_type = "application/json"
         accepts = "application/json"
 
+        # https://github.com/aws/amazon-sagemaker-examples/blob/main/introduction_to_amazon_algorithms/jumpstart-foundation-models/llama-2-text-completion.ipynb
         def transform_input(self, prompt: str, model_kwargs: dict) -> bytes:
-            input_str = json.dumps({"text_inputs": prompt, **model_kwargs})
+            input_str = json.dumps({"inputs": prompt, "parameters": model_kwargs})
             return input_str.encode('utf-8')
 
         def transform_output(self, output: bytes) -> str:
             response_json = json.loads(output.read().decode("utf-8"))
-            return response_json["generated_texts"][0]
+            return response_json[0]["generation"]
 
     content_handler = ContentHandler()
 
+    # https://github.com/aws/amazon-sagemaker-examples/blob/main/introduction_to_amazon_algorithms/jumpstart-foundation-models/llama-2-text-completion.ipynb
     model_kwargs = {
-      "max_length": 500,
-      "num_return_sequences": 1,
-      "top_k": 250,
-      "top_p": 0.95,
-      "do_sample": False,
-      "temperature": 1
+        "max_new_tokens": 256,
+        "top_p": 0.9,
+        "temperature": 0.6,
+        # "return_full_text": True,
     }
 
     llm = SagemakerEndpoint(
         endpoint_name=text2text_model_endpoint,
         region_name=region,
         model_kwargs=model_kwargs,
+        endpoint_kwargs={"CustomAttributes": "accept_eula=true"},
         content_handler=content_handler
     )
 
@@ -153,14 +169,23 @@ def build_chain():
         template=prompt_template, input_variables=["context", "question"]
     )
 
-    chain_type_kwargs = {"prompt": PROMPT, "verbose": True}
-    qa = RetrievalQA.from_chain_type(
-        llm,
-        chain_type="stuff",
+    condense_qa_template = """
+    Given the following conversation and a follow up question, rephrase the follow up question
+    to be a standalone question.
+
+    Chat History:
+    {chat_history}
+    Follow Up Input: {question}
+    Standalone question:"""
+    standalone_question_prompt = PromptTemplate.from_template(condense_qa_template)
+
+    qa = ConversationalRetrievalChain.from_llm(
+        llm=llm,
         retriever=retriever,
-        chain_type_kwargs=chain_type_kwargs,
+        condense_question_prompt=standalone_question_prompt,
         return_source_documents=True,
-        verbose=True, #DEBUG
+        combine_docs_chain_kwargs={"prompt":PROMPT},
+        verbose=False
     )
 
     logger.info(f"\ntype('qa'): \"{type(qa)}\"\n")
@@ -168,19 +193,29 @@ def build_chain():
 
 
 def run_chain(chain, prompt: str, history=[]):
-    result = chain(prompt, include_run_info=True)
-    # To make it compatible with chat samples
-    return {
-        "answer": result['result'],
-        "source_documents": result['source_documents']
-    }
+   return chain({"question": prompt, "chat_history": history})
 
 
 if __name__ == "__main__":
-    chain = build_chain()
-    result = run_chain(chain, "What is SageMaker model monitor? Write your answer in a nicely formatted way.")
-    print(result['answer'])
-    if 'source_documents' in result:
-        print('Sources:')
-        for d in result['source_documents']:
-          print(d.metadata['source'])
+    chat_history = []
+    qa = build_chain()
+    print(bcolors.OKBLUE + "Hello! How can I help you?" + bcolors.ENDC)
+    print(bcolors.OKCYAN + "Ask a question, start a New search: or CTRL-D to exit." + bcolors.ENDC)
+    print(">", end=" ", flush=True)
+    for query in sys.stdin:
+        if (query.strip().lower().startswith("new search:")):
+            query = query.strip().lower().replace("new search:","")
+            chat_history = []
+        elif (len(chat_history) == MAX_HISTORY_LENGTH):
+            chat_history.pop(0)
+        result = run_chain(qa, query, chat_history)
+        chat_history.append((query, result["answer"]))
+        print(bcolors.OKGREEN + result['answer'] + bcolors.ENDC)
+        if 'source_documents' in result:
+            print(bcolors.OKGREEN + 'Sources:')
+            for d in result['source_documents']:
+                print(d.metadata['source'])
+        print(bcolors.ENDC)
+        print(bcolors.OKCYAN + "Ask a question, start a New search: or CTRL-D to exit." + bcolors.ENDC)
+        print(">", end=" ", flush=True)
+    print(bcolors.OKBLUE + "Bye" + bcolors.ENDC)

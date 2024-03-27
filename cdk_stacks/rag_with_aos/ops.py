@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import json
 import random
@@ -84,7 +86,15 @@ class OpenSearchStack(Stack):
     )
     cdk.Tags.of(opensearch_domain).add('Name', opensearch_domain_name)
 
-    cdk.CfnOutput(self, 'OpenSourceDomainArn', value=opensearch_domain.domain_arn, export_name='OpenSourceDomainArn')
-    cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=f"https://{opensearch_domain.domain_endpoint}", export_name='OpenSearchDomainEndpoint')
-    cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"https://{opensearch_domain.domain_endpoint}/_dashboards/", export_name='OpenSearchDashboardsURL')
-    cdk.CfnOutput(self, 'OpenSearchSecret', value=master_user_secret.secret_name, export_name='MasterUserSecretId')
+    cdk.CfnOutput(self, 'OpenSourceDomainArn',
+      value=opensearch_domain.domain_arn,
+      export_name=f'{self.stack_name}-OpenSourceDomainArn')
+    cdk.CfnOutput(self, 'OpenSearchDomainEndpoint',
+      value=f"https://{opensearch_domain.domain_endpoint}",
+      export_name=f'{self.stack_name}-OpenSearchDomainEndpoint')
+    cdk.CfnOutput(self, 'OpenSearchDashboardsURL',
+      value=f"https://{opensearch_domain.domain_endpoint}/_dashboards/",
+      export_name=f'{self.stack_name}-OpenSearchDashboardsURL')
+    cdk.CfnOutput(self, 'OpenSearchSecret',
+      value=master_user_secret.secret_name,
+      export_name=f'{self.stack_name}-MasterUserSecretId')

@@ -1,5 +1,5 @@
 from .vpc import VpcStack
 from .ops import OpenSearchStack
 from .sm_studio import SageMakerStudioStack
-from .sm_embedding_endpoint import EmbeddingEndpointStack
-from .sm_llm_endpoint import LLMEndpointStack
+from .sm_custom_embedding_endpoint import SageMakerEmbeddingEndpointStack as EmbeddingEndpointStack
+from .sm_jumpstart_llm_endpoint import SageMakerJumpStartLLMEndpointStack as LLMEndpointStack
