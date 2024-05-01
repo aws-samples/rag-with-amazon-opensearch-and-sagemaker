@@ -4,22 +4,23 @@
 
 import os
 
-import aws_cdk as cdk
+from aws_cdk import App, Environment, Stack
 
 from rag_with_aos import (
   VpcStack,
   OpenSearchStack,
   SageMakerStudioStack,
   EmbeddingEndpointStack,
-  LLMEndpointStack
+  LLMEndpointStack,
+  StreamlitAppStack
 )
 
-APP_ENV = cdk.Environment(
+APP_ENV = Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]
 )
 
-app = cdk.App()
+app = App()
 
 vpc_stack = VpcStack(app, 'RAGVpcStack',
   env=APP_ENV)
@@ -45,5 +46,18 @@ sm_llm_endpoint = LLMEndpointStack(app, 'LLMEndpointStack',
   env=APP_ENV
 )
 sm_llm_endpoint.add_dependency(sm_studio_stack)
+
+ecs_app = StreamlitAppStack(app, "StreamlitAppStack",
+  vpc_stack.vpc,
+  ops_stack.master_user_secret,
+  ops_stack.opensearch_domain,
+  sm_llm_endpoint.llm_endpoint,
+  sm_embedding_endpoint.embedding_endpoint,
+  env=APP_ENV
+)
+ecs_app.add_dependency(ops_stack)
+ecs_app.add_dependency(sm_studio_stack)
+ecs_app.add_dependency(sm_llm_endpoint)
+ecs_app.add_dependency(sm_embedding_endpoint)
 
 app.synth()

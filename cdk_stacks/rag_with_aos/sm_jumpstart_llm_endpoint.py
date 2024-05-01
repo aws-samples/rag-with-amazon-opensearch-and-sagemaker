@@ -34,14 +34,14 @@ class SageMakerJumpStartLLMEndpointStack(Stack):
 
     #XXX: Available JumStart Model List
     # https://github.com/awslabs/generative-ai-cdk-constructs/blob/main/src/patterns/gen-ai/aws-model-deployment-sagemaker/jumpstart-model.ts
-    llm_endpoint = JumpStartSageMakerEndpoint(self, 'LLMEndpoint',
+    self.llm_endpoint = JumpStartSageMakerEndpoint(self, 'LLMEndpoint',
       model=JumpStartModel.of(jumpstart_model_id.upper()),
       accept_eula=True,
       instance_type=SageMakerInstanceType.ML_G5_2_XLARGE,
       endpoint_name=endpoint_name
     )
 
-    cdk.CfnOutput(self, 'LLMEndpointName', value=llm_endpoint.cfn_endpoint.endpoint_name,
+    cdk.CfnOutput(self, 'LLMEndpointName', value=self.llm_endpoint.cfn_endpoint.endpoint_name,
       export_name=f'{self.stack_name}-LLMEndpointName')
-    cdk.CfnOutput(self, 'LLMEndpointArn', value=llm_endpoint.endpoint_arn,
+    cdk.CfnOutput(self, 'LLMEndpointArn', value=self.llm_endpoint.endpoint_arn,
       export_name=f'{self.stack_name}-LLMEndpointArn')

@@ -116,7 +116,8 @@ def handle_input():
 
     llm_chain = st.session_state['llm_chain']
     chain = st.session_state['llm_app']
-    result = chain.run_chain(llm_chain, input, chat_history)
+    with st.spinner():
+        result = chain.run_chain(llm_chain, input, chat_history)
     answer = result['answer']
     chat_history.append((input, answer))
 

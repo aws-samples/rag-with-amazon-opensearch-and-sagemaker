@@ -2,5 +2,14 @@
   "vpc_name": "default",
   "opensearch_domain_name": "rag-vectordb",
   "jumpstart_llm_model_id": "META_TEXTGENERATION_LLAMA_2_7B_2_1_0",
-  "llm_endpoint_name": "llama2-7b"
+  "llm_endpoint_name": "llama2-7b",
+  "availability-zones:account=132415574961:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ],
+  "streamlit_container_port": 8501
 }

@@ -82,6 +82,7 @@ RAGOpenSearchStack
 RAGSageMakerStudioStack
 EmbeddingEndpointStack
 LLMEndpointStack
+StreamlitAppStack
 ```
 
 #### Step 2: Create OpenSearch cluster
@@ -106,6 +107,12 @@ LLMEndpointStack
 
 ```
 (.venv) $ cdk deploy --require-approval never LLMEndpointStack
+```
+
+#### Step 6: Deploy the Streamlit app on ECS Fargate
+
+```
+(.venv) $ cdk deploy --require-approval never StreamlitAppStack
 ```
 
 **Once all CDK stacks have been successfully created, proceed with the remaining steps of the [overall workflow](../README.md#overall-workflow).**

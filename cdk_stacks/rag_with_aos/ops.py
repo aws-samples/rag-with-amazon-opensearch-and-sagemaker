@@ -31,7 +31,7 @@ class OpenSearchStack(Stack):
     opensearch_domain_name = self.node.try_get_context('opensearch_domain_name') or OPENSEARCH_DEFAULT_DOMAIN_NAME
     assert re.fullmatch(r'([a-z][a-z0-9\-]+){3,28}?', opensearch_domain_name), 'Invalid domain name'
 
-    master_user_secret = aws_secretsmanager.Secret(self, "OpenSearchMasterUserSecret",
+    self.master_user_secret = aws_secretsmanager.Secret(self, "OpenSearchMasterUserSecret",
       generate_secret_string=aws_secretsmanager.SecretStringGenerator(
         secret_string_template=json.dumps({"username": "admin"}),
         generate_string_key="password",
@@ -43,7 +43,7 @@ class OpenSearchStack(Stack):
 
     #XXX: aws cdk elastsearch example - https://github.com/aws/aws-cdk/issues/2873
     # You should camelCase the property names instead of PascalCase
-    opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
+    self.opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
       domain_name=opensearch_domain_name,
       #XXX: Supported versions of OpenSearch and Elasticsearch
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
@@ -70,8 +70,8 @@ class OpenSearchStack(Stack):
         "slow_index_log_enabled": True
       },
       fine_grained_access_control=aws_opensearchservice.AdvancedSecurityOptions(
-        master_user_name=master_user_secret.secret_value_from_json("username").unsafe_unwrap(),
-        master_user_password=master_user_secret.secret_value_from_json("password")
+        master_user_name=self.master_user_secret.secret_value_from_json("username").unsafe_unwrap(),
+        master_user_password=self.master_user_secret.secret_value_from_json("password")
       ),
       # Enforce HTTPS is required when fine-grained access control is enabled.
       enforce_https=True,
@@ -84,17 +84,18 @@ class OpenSearchStack(Stack):
       use_unsigned_basic_auth=True,
       removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
     )
-    cdk.Tags.of(opensearch_domain).add('Name', opensearch_domain_name)
+
+    cdk.Tags.of(self.opensearch_domain).add('Name', opensearch_domain_name)
 
     cdk.CfnOutput(self, 'OpenSourceDomainArn',
-      value=opensearch_domain.domain_arn,
+      value=self.opensearch_domain.domain_arn,
       export_name=f'{self.stack_name}-OpenSourceDomainArn')
     cdk.CfnOutput(self, 'OpenSearchDomainEndpoint',
-      value=f"https://{opensearch_domain.domain_endpoint}",
+      value=f"https://{self.opensearch_domain.domain_endpoint}",
       export_name=f'{self.stack_name}-OpenSearchDomainEndpoint')
     cdk.CfnOutput(self, 'OpenSearchDashboardsURL',
-      value=f"https://{opensearch_domain.domain_endpoint}/_dashboards/",
+      value=f"https://{self.opensearch_domain.domain_endpoint}/_dashboards/",
       export_name=f'{self.stack_name}-OpenSearchDashboardsURL')
     cdk.CfnOutput(self, 'OpenSearchSecret',
-      value=master_user_secret.secret_name,
+      value=self.master_user_secret.secret_name,
       export_name=f'{self.stack_name}-MasterUserSecretId')
