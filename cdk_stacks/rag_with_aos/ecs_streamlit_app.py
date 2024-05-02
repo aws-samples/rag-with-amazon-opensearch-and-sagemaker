@@ -36,7 +36,7 @@ class StreamlitAppStack(Stack):
         task_role = iam.Role(
             self, "ECSTaskRole",
             assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
-            description="Role for ECS Tasks to access Secrets and SageMaker"
+            description="Role for ECS Tasks to access Secrets Manager and SageMaker"
         )
 
         # Policy to access Secrets Manager secrets
@@ -62,6 +62,7 @@ class StreamlitAppStack(Stack):
         task_role.add_to_policy(secrets_policy)
         task_role.add_to_policy(sagemaker_policy)
 
+        # Set up ECS cluster and networking
         cluster = ecs.Cluster(
             self, "Cluster",
             vpc=vpc
@@ -73,8 +74,14 @@ class StreamlitAppStack(Stack):
             description="Allow traffic on container port",
             allow_all_outbound=True
         )
-        security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(container_port), "Allow inbound traffic")
 
+        security_group.add_ingress_rule(
+            ec2.Peer.any_ipv4(),
+            ec2.Port.tcp(container_port),
+            "Allow inbound traffic"
+        )
+
+        # Set up Fargate task definition and service
         task_definition = ecs.FargateTaskDefinition(
             self, "TaskDef",
             memory_limit_mib=512,

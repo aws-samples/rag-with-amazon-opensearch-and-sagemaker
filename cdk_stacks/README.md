@@ -109,7 +109,7 @@ StreamlitAppStack
 (.venv) $ cdk deploy --require-approval never LLMEndpointStack
 ```
 
-#### Step 6: Deploy the Streamlit app on ECS Fargate
+#### Step 6 (Optional): Deploy the Streamlit app on ECS Fargate
 
 ```
 (.venv) $ cdk deploy --require-approval never StreamlitAppStack
