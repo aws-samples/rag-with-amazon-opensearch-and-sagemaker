@@ -55,9 +55,6 @@ ecs_app = StreamlitAppStack(app, "StreamlitAppStack",
   sm_embedding_endpoint.embedding_endpoint,
   env=APP_ENV
 )
-ecs_app.add_dependency(ops_stack)
-ecs_app.add_dependency(sm_studio_stack)
-ecs_app.add_dependency(sm_llm_endpoint)
 ecs_app.add_dependency(sm_embedding_endpoint)
 
 app.synth()
