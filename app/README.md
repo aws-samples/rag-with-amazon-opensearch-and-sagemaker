@@ -2,7 +2,7 @@
 
 Now we’re ready to run the Streamlit web application for our question answering bot.
 
-SageMaker Studio provides a convenient platform to host the Streamlit web application. The following steps describes how to run the Streamlit app on SageMaker Studio. Alternatively, you could also follow the same procedure to run the app on Amazon EC2 instance or Cloud9 in your AWS Account.
+SageMaker Studio provides a convenient platform to host the Streamlit web application. The following steps describes how to run the Streamlit app on SageMaker Studio. Alternatively, you could also follow the same procedure to run the app on Amazon EC2 instance, Cloud9 in your AWS Account, or deploy as a container service to AWS ECS Fargate.
 
 1. Open Studio and then open a new **System terminal**.
    ![](sagemaker-studio-launcher-screenshot.png)
@@ -39,6 +39,19 @@ SageMaker Studio provides a convenient platform to host the Streamlit web applic
 The following screenshot shows the app with a couple of user questions.
 
 ![qa-with-llm-and-rag](./qa-with-llm-and-rag.png)
+
+
+## Deploy Streamlit application on Amazon ECS Fargate with AWS CDK
+
+To deploy the Streamlit application on Amazon ECS Fargate using AWS CDK, follow these steps:
+
+1. Ensure you have the AWS CDK and docker or finch installed and configured.
+2. Deploy the ECS stack from `cdk_stacks/` using the command `cdk deploy --require-approval never StreamlitAppStack`.
+3. Access the Streamlit application using the public URL provided by the provisioned load balancer.
+   1. You can find this value under the export named `{stack-name}-StreamlitEndpoint`
+4. Consider adding a security group ingress rule that scopes access to the application from your network by a prefix list or a CIDR block
+5. Also consider enabling HTTPS by uploading a ssl certificate from IAM or ACM to the loadbalancer and add a listener on port 443
+
 
 ## References
 

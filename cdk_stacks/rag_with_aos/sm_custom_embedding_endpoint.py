@@ -33,7 +33,7 @@ class SageMakerEmbeddingEndpointStack(Stack):
     endpoint_name = f"gpt-j-6b-fp16-endpoint-{RANDOM_GUID}"
 
     #XXX: https://github.com/awslabs/generative-ai-cdk-constructs/blob/main/src/patterns/gen-ai/aws-model-deployment-sagemaker/README_custom_sagemaker_endpoint.md
-    embedding_endpoint = CustomSageMakerEndpoint(self, 'EmbeddingEndpoint',
+    self.embedding_endpoint = CustomSageMakerEndpoint(self, 'EmbeddingEndpoint',
       model_id='gpt-j-6b-fp16',
       instance_type=SageMakerInstanceType.ML_G5_2_XLARGE,
       container=DeepLearningContainerImage.from_deep_learning_container_image(
@@ -47,8 +47,8 @@ class SageMakerEmbeddingEndpointStack(Stack):
     )
 
     cdk.CfnOutput(self, 'EmbeddingEndpointName',
-      value=embedding_endpoint.cfn_endpoint.endpoint_name,
+      value=self.embedding_endpoint.cfn_endpoint.endpoint_name,
       export_name=f'{self.stack_name}-EmbeddingEndpointName')
     cdk.CfnOutput(self, 'EmbeddingEndpointArn',
-      value=embedding_endpoint.endpoint_arn,
+      value=self.embedding_endpoint.endpoint_arn,
       export_name=f'{self.stack_name}-EmbeddingEndpointArn')
