@@ -1,29 +1,21 @@
-FROM ubuntu:latest
+FROM --platform=linux/amd64 python:3.10.13-slim
 
-# Install necessary packages
-RUN apt-get update && \
-    apt-get install -y wget curl git \
-        build-essential \
-        automake libcurl4-openssl-dev \
-        libxml2-dev pkg-config libssl-dev libfuse-dev parallel && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-# Install Miniforge
-RUN wget --quiet https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O /miniforge.sh && \
-    bash /miniforge.sh -b -p /miniconda && \
-    rm /miniforge.sh
+COPY requirements.txt .
+COPY *.py .
+COPY images/*.png images/
 
-WORKDIR /workspace
-COPY . .
+RUN pip --no-cache-dir install -Uq pip
+RUN pip --no-cache-dir install -Uq -r requirements.txt
 
-ENV PATH="/workspace:/miniconda/bin:${PATH}"
+# Set some environment variables. PYTHONUNBUFFERED keeps Python from buffering our standard
+# output stream, which means that logs can be delivered to the user quickly. PYTHONDONTWRITEBYTECODE
+# keeps Python from writing the .pyc files which are unnecessary in this case. We also update
+# PATH so that the train and serve programs are found when the container is invoked.
+ENV PYTHONUNBUFFERED=TRUE
+ENV PYTHONDONTWRITEBYTECODE=TRUE
 
-# Create Conda environment and clean up in one layer to reduce image size
-RUN conda update conda -y && \
-    conda install mamba -n base -c conda-forge && \
-    conda config --set ssl_verify no && \
-    mamba env create -f environment.yml && \
-    mamba clean -afy
-
-ENTRYPOINT ["mamba", "run", "--no-capture-output", "-n", "streamlit-env", "streamlit", "run", "app.py", "--server.address=0.0.0.0"]
+EXPOSE 8501
+CMD streamlit run app.py --server.address=0.0.0.0
+# ENTRYPOINT ["streamlit", "run", "app.py", "--server.address=0.0.0.0"]
