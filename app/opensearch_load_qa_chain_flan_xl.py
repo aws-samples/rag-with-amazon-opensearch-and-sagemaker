@@ -6,7 +6,7 @@ import os
 import json
 import logging
 import sys
-from typing import List
+from typing import List, Callable
 from urllib.parse import urlparse
 
 import boto3
@@ -193,7 +193,7 @@ def main():
     chain = load_qa_chain(llm=_sm_llm, prompt=prompt, verbose=True)
     logger.info(f"\ntype('chain'): \"{type(chain)}\"\n")
 
-    answer = chain({"input_documents": docs, "question": query}, return_only_outputs=True)['output_text']
+    answer = chain.invoke({"input_documents": docs, "question": query}, return_only_outputs=True)['output_text']
 
     logger.info(f"answer received from llm,\nquestion: \"{query}\"\nanswer: \"{answer}\"")
 

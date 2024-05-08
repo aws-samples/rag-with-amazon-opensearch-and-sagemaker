@@ -193,7 +193,7 @@ def build_chain():
 
 
 def run_chain(chain, prompt: str, history=[]):
-   return chain({"question": prompt, "chat_history": history})
+   return chain.invoke({"question": prompt, "chat_history": history})
 
 
 if __name__ == "__main__":
@@ -212,7 +212,7 @@ if __name__ == "__main__":
         chat_history.append((query, result["answer"]))
         print(bcolors.OKGREEN + result['answer'] + bcolors.ENDC)
         if 'source_documents' in result:
-            print(bcolors.OKGREEN + 'Sources:')
+            print(bcolors.OKGREEN + '\nSources:')
             for d in result['source_documents']:
                 print(d.metadata['source'])
         print(bcolors.ENDC)
