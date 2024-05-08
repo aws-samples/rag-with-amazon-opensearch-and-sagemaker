@@ -2,14 +2,15 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 
+import os
 import streamlit as st
 import uuid
 
 import opensearch_chat_llama2 as llm_app
 
 
-USER_ICON = "images/user-icon.png"
-AI_ICON = "images/ai-icon.png"
+USER_ICON = f"{os.path.dirname(__file__)}/images/user-icon.png"
+AI_ICON = f"{os.path.dirname(__file__)}/images/ai-icon.png"
 MAX_HISTORY_LENGTH = 5
 PROVIDER_MAP = {
     'llama2': 'Llama2 7B',
