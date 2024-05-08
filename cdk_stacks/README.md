@@ -111,6 +111,8 @@ StreamlitAppStack
 
 #### Step 6 (Optional): Deploy the Streamlit app on ECS Fargate
 
+:warning: Before deploy the following CDK stack, make sure Docker is runing on your machine.
+
 ```
 (.venv) $ cdk deploy --require-approval never StreamlitAppStack
 ```
