@@ -47,17 +47,20 @@ class OpenSearchStack(Stack):
       domain_name=opensearch_domain_name,
       #XXX: Supported versions of OpenSearch and Elasticsearch
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
-      version=aws_opensearchservice.EngineVersion.OPENSEARCH_2_5,
-      #XXX: You cannot use graviton instances with non-graviton instances.
-      # Use graviton instances as data nodes or use non-graviton instances as master nodes.
+      version=aws_opensearchservice.EngineVersion.OPENSEARCH_2_11,
+      #XXX: Amazon OpenSearch Service - Current generation instance types
+      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen
+      # - The OR1 instance types require OpenSearch 2.11 or later.
+      # - OR1 instances are only compatible with other Graviton instance types master nodes (C6g, M6g, R6g)
       capacity={
         "master_nodes": 3,
-        "master_node_instance_type": "r6g.large.search",
+        "master_node_instance_type": "m6g.large.search",
         "data_nodes": 3,
-        "data_node_instance_type": "r6g.large.search"
+        "data_node_instance_type": "or1.large.search"
       },
       ebs={
-        "volume_size": 10,
+        # Volume size must be between 20 and 1536 for or1.large.search instance type and version OpenSearch_2.11
+        "volume_size": 20,
         "volume_type": aws_ec2.EbsDeviceVolumeType.GP3
       },
       #XXX: az_count must be equal to vpc subnets count.
