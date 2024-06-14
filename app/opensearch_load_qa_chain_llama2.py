@@ -74,13 +74,27 @@ class ContentHandlerForTextGeneration(LLMContentHandler):
     content_type = "application/json"
     accepts = "application/json"
 
-    def transform_input(self, prompt: str, model_kwargs = {}) -> bytes:
-        input_str = json.dumps({"inputs": prompt, "parameters": model_kwargs})
-        return input_str.encode('utf-8')
+    # https://github.com/aws/amazon-sagemaker-examples/blob/main/introduction_to_amazon_algorithms/jumpstart-foundation-models/llama-2-chat-completion.ipynb
+    def transform_input(self, prompt: str, model_kwargs: dict) -> bytes:
+        system_prompt = "You are a helpful assistant. Always answer to questions as helpfully as possible." \
+                        " If you don't know the answer to a question, say I don't know the answer"
+
+        payload = {
+            "inputs": [
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt},
+                ],
+            ],
+            "parameters": model_kwargs,
+        }
+        input_str = json.dumps(payload)
+        return input_str.encode("utf-8")
 
     def transform_output(self, output: bytes) -> str:
         response_json = json.loads(output.read().decode("utf-8"))
-        return response_json[0]["generation"]
+        content = response_json[0]["generation"]["content"]
+        return content
 
 
 def _create_sagemaker_embeddings(endpoint_name: str, region: str = "us-east-1") -> SagemakerEndpointEmbeddingsJumpStart:
@@ -137,7 +151,7 @@ def setup_sagemaker_endpoint_for_text_generation(endpoint_name, region: str = "u
         "max_new_tokens": 256,
         "top_p": 0.9,
         "temperature": 0.6,
-        # "return_full_text": True,
+        "return_full_text": False,
     }
 
     content_handler = ContentHandlerForTextGeneration()

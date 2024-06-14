@@ -1,7 +1,7 @@
 {
-  "vpc_name": "default",
   "opensearch_domain_name": "rag-vectordb",
-  "jumpstart_llm_model_id": "META_TEXTGENERATION_LLAMA_2_7B_2_1_0",
-  "llm_endpoint_name": "llama2-7b",
-  "streamlit_container_port": 8501
+  "jumpstart_model_info": {
+    "model_id": "meta-textgeneration-llama-2-7b-f",
+    "version": "2.0.1"
+  }
 }

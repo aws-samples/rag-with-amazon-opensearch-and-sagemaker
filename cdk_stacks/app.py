@@ -45,7 +45,7 @@ sm_embedding_endpoint.add_dependency(sm_studio_stack)
 sm_llm_endpoint = LLMEndpointStack(app, 'LLMEndpointStack',
   env=APP_ENV
 )
-sm_llm_endpoint.add_dependency(sm_studio_stack)
+sm_llm_endpoint.add_dependency(sm_embedding_endpoint)
 
 ecs_app = StreamlitAppStack(app, "StreamlitAppStack",
   vpc_stack.vpc,
@@ -55,6 +55,6 @@ ecs_app = StreamlitAppStack(app, "StreamlitAppStack",
   sm_embedding_endpoint.embedding_endpoint,
   env=APP_ENV
 )
-ecs_app.add_dependency(sm_embedding_endpoint)
+ecs_app.add_dependency(sm_llm_endpoint)
 
 app.synth()
