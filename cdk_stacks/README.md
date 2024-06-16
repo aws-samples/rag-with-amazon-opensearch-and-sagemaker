@@ -59,6 +59,15 @@ For example:
 
 :information_source: The `model_id`, and `version` provided by SageMaker JumpStart can be found in [**SageMaker Built-in Algorithms with pre-trained Model Table**](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html).
 
+> :warning: **Important**: Make sure you need to make sure `docker daemon` is running.<br/>
+> Otherwise you will encounter the following errors:
+
+  ```
+  ERROR: Cannot connect to the Docker daemon at unix://$HOME/.docker/run/docker.sock. Is the docker daemon running?
+  jsii.errors.JavaScriptError:
+    Error: docker exited with status 1
+  ```
+
 Now this point you can now synthesize the CloudFormation template for this code.
 
 ```
