@@ -15,10 +15,8 @@ from langchain_community.vectorstores import OpenSearchVectorSearch
 from langchain_community.embeddings import SagemakerEndpointEmbeddings
 from langchain_community.embeddings.sagemaker_endpoint import EmbeddingsContentHandler
 
-from langchain.llms.sagemaker_endpoint import (
-    SagemakerEndpoint,
-    LLMContentHandler
-)
+from langchain_community.llms import SagemakerEndpoint
+from langchain_community.llms.sagemaker_endpoint import LLMContentHandler
 
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
